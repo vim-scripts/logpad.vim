@@ -2,8 +2,8 @@
 "
 " Vim plugin for emulating Windows Notepad's logging functionality.
 " Maintainer:  Sven Knurr <der_tuxman@arcor.de>
-" Version:     1.0
-" Last Change: 2009 Sep 04
+" Version:     1.1
+" Last Change: 2009 Sep 05
 "
 " --------[ HOW TO USE IT ]--------
 "
@@ -23,7 +23,7 @@
 "   >> default value: 0
 "
 " let LogpadLineBreak = [ 0 / 1 ]
-"   >> adds an empty line between two log entries
+"   >> adds an empty line before a new log entry
 "   >> default value: 0 (Windows Notepad behavior)
 "
 " let LogpadIgnoreNotes = [ 0 / 1 ]
@@ -32,6 +32,7 @@
 "
 " -----------[ CHANGES ]-----------
 "
+" v1.1: fix: the LogpadLineBreak setting also affects the single empty line below ".LOG"
 " v1.0: initial release.
 "
 " -----------[ CREDITS ]-----------
@@ -70,19 +71,13 @@ function LogpadInit()
                 " obviously the user doesn't want to create a log then...
                 return
             endif
-        elseif line('$') == 1
-            " add one single empty line below ".LOG" if needed
-            let s:failvar = append(line('$'), "")
-            if s:failvar == 1
-                " an error occured while adding a line, so we'd better break here
-                return
-            endif
         endif
 
         " add a new entry
         let s:failvar = 0
         while s:failvar != 1
             if g:LogpadLineBreak == 1
+                " add a single empty divider line if requested
                 let s:failvar = append(line('$'), "")
             endif
             let s:failvar = append(line('$'), strftime("%c"))
