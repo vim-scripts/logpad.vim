@@ -2,7 +2,7 @@
 "
 " Vim plugin for emulating Windows Notepad's logging functionality.
 " Maintainer:  Sven Knurr <der_tuxman@arcor.de>
-" Version:     1.1
+" Version:     1.2
 " Last Change: 2009 Sep 05
 "
 " --------[ HOW TO USE IT ]--------
@@ -32,6 +32,7 @@
 "
 " -----------[ CHANGES ]-----------
 "
+" v1.2: fix: converted logpad.vim to UNIX format (was not working outside Windows)
 " v1.1: fix: the LogpadLineBreak setting also affects the single empty line below ".LOG"
 " v1.0: initial release.
 "
