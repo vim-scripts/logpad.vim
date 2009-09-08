@@ -2,8 +2,8 @@
 "
 " Vim plugin for emulating Windows Notepad's logging functionality.
 " Maintainer:  Sven Knurr <der_tuxman@arcor.de>
-" Version:     1.2
-" Last Change: 2009 Sep 05
+" Version:     1.3
+" Last Change: 2009 Sep 08
 "
 " --------[ HOW TO USE IT ]--------
 "
@@ -32,6 +32,7 @@
 "
 " -----------[ CHANGES ]-----------
 "
+" v1.3: added support for GetLatestVimScripts, removed initial cursor() call
 " v1.2: fix: converted logpad.vim to UNIX format (was not working outside Windows)
 " v1.1: fix: the LogpadLineBreak setting also affects the single empty line below ".LOG"
 " v1.0: initial release.
@@ -52,19 +53,17 @@ function s:TryToFigureThatTimestampRegex()
 endfunction
 
 function LogpadInit()
-    " check the configuration, set it if needed
+    " check the configuration, set it (and exit) if needed
     if !exists('g:LogpadEnabled')     | let g:LogpadEnabled     = 1 | endif
     if !exists('g:LogpadInsert')      | let g:LogpadInsert      = 0 | endif
     if !exists('g:LogpadLineBreak')   | let g:LogpadLineBreak   = 0 | endif
     if !exists('g:LogpadIgnoreNotes') | let g:LogpadIgnoreNotes = 0 | endif
 
-    if g:LogpadEnabled == 0
-        return
-    endif
+    if g:LogpadEnabled == 0           | return                      | endif
 
+    " main part
     if getline(1) =~ '^\.LOG$'
         call s:TryToFigureThatTimestampRegex()
-        call cursor(0, 0)
 
         if nextnonblank(2) > 0
             if getline(nextnonblank(2)) !~ s:timestampformat && g:LogpadIgnoreNotes == 0
@@ -100,4 +99,7 @@ endfunction
 
 autocmd BufReadPost * call LogpadInit()
 
+" -------[ COMPAT COMMENTS ]-------
+
+" GetLatestVimScripts: 2775 1 :AutoInstall: logpad.vim
 " vim:ft=vim:sw=4:sts=4:et
