@@ -2,8 +2,8 @@
 "
 " Vim plugin for emulating Windows Notepad's logging functionality.
 " Maintainer:  Sven Knurr <der_tuxman@arcor.de>
-" Version:     1.3
-" Last Change: 2009 Sep 08
+" Version:     1.4
+" Last Change: 2009 Dec 19
 "
 " --------[ HOW TO USE IT ]--------
 "
@@ -30,8 +30,13 @@
 "   >> allows adding notes before the first log entry
 "   >> default value: 0
 "
+" let LogpadIgnoreReadOnly = [ 0 / 1 ]
+"   >> allows logpad to ignore a file's read-only flag
+"   >> default value: 0
+"
 " -----------[ CHANGES ]-----------
 "
+" v1.4: added check and switch for read-only flag
 " v1.3: added support for GetLatestVimScripts, removed initial cursor() call
 " v1.2: fix: converted logpad.vim to UNIX format (was not working outside Windows)
 " v1.1: fix: the LogpadLineBreak setting also affects the single empty line below ".LOG"
@@ -54,12 +59,14 @@ endfunction
 
 function LogpadInit()
     " check the configuration, set it (and exit) if needed
-    if !exists('g:LogpadEnabled')     | let g:LogpadEnabled     = 1 | endif
-    if !exists('g:LogpadInsert')      | let g:LogpadInsert      = 0 | endif
-    if !exists('g:LogpadLineBreak')   | let g:LogpadLineBreak   = 0 | endif
-    if !exists('g:LogpadIgnoreNotes') | let g:LogpadIgnoreNotes = 0 | endif
+    if !exists('g:LogpadEnabled')        | let g:LogpadEnabled        = 1 | endif
+    if !exists('g:LogpadInsert')         | let g:LogpadInsert         = 0 | endif
+    if !exists('g:LogpadLineBreak')      | let g:LogpadLineBreak      = 0 | endif
+    if !exists('g:LogpadIgnoreNotes')    | let g:LogpadIgnoreNotes    = 0 | endif
+    if !exists('g:LogpadIgnoreReadOnly') | let g:LogpadIgnoreReadOnly = 0 | endif
 
-    if g:LogpadEnabled == 0           | return                      | endif
+    if g:LogpadEnabled == 0                          | return             | endif
+    if g:LogpadIgnoreReadOnly == 0 && &readonly == 1 | return             | endif
 
     " main part
     if getline(1) =~ '^\.LOG$'
