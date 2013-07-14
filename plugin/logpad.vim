@@ -2,7 +2,7 @@
 "
 " Vim plugin for emulating Windows Notepad's logging functionality.
 " Maintainer:  Sven Knurr <der_tuxman@arcor.de>
-" Version:     1.5
+" Version:     1.6
 " Last Change: 2013 Jul 14
 "
 " --------[ HOW TO USE IT ]--------
@@ -36,6 +36,7 @@
 "
 " -----------[ CHANGES ]-----------
 "
+" v1.6: fix: logpad.vim was not detecting some timestamps correctly
 " v1.5: insert mode code improvement and using function! now
 " v1.4: added check and switch for read-only flag
 " v1.3: added support for GetLatestVimScripts, removed initial cursor() call
@@ -50,16 +51,10 @@
 " Thanks to the guys in #vim (freenode.net) for basic help.
 "
 " Contributors:
-"  . timestamping clues: DHulme @ freenode.net
+"  . timestamping clues: DHulme @ freenode.net (pre-v1.6)
 "  . various patches:    Talha Mansoor
 "
 " ---------[ HERE WE GO! ]---------
-
-function! s:TryToFigureThatTimestampRegex()
-    let s:timestampformat = strftime("%c")
-    let s:timestampformat = substitute(s:timestampformat,'\a','\\a','g')
-    let s:timestampformat = substitute(s:timestampformat,'\d','\\d','g')
-endfunction
 
 function! LogpadInit()
     " check the configuration, set it (and exit) if needed
@@ -74,7 +69,8 @@ function! LogpadInit()
 
     " main part
     if getline(1) =~ '^\.LOG$'
-        call s:TryToFigureThatTimestampRegex()
+        " 3 letters for day name - space - 3 letters for month - space - an optional space that occurs if day is single digit - one or two digit for day - space - hour:min:seconds - space - year 
+        let s:timestampformat = '\(\a\{3}\s\)\{2}\s\{0,1}\d\{1,2}\s\(\d\{2}:\)\{2}\d\{2}\s\d\{4}'
 
         if nextnonblank(2) > 0
             if getline(nextnonblank(2)) !~ s:timestampformat && g:LogpadIgnoreNotes == 0
