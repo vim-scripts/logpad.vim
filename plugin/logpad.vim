@@ -2,8 +2,8 @@
 "
 " Vim plugin for emulating Windows Notepad's logging functionality.
 " Maintainer:  Sven Knurr <der_tuxman@arcor.de>
-" Version:     1.4
-" Last Change: 2009 Dec 19
+" Version:     1.5
+" Last Change: 2013 Jul 14
 "
 " --------[ HOW TO USE IT ]--------
 "
@@ -19,7 +19,7 @@
 "   >> default value: 1
 "
 " let LogpadInsert = [ 0 / 1 ]
-"   >> automatically enables &insertmode when a new log entry is created
+"   >> automatically enables insert mode when a new log entry is created
 "   >> default value: 0
 "
 " let LogpadLineBreak = [ 0 / 1 ]
@@ -36,6 +36,7 @@
 "
 " -----------[ CHANGES ]-----------
 "
+" v1.5: insert mode code improvement and using function! now
 " v1.4: added check and switch for read-only flag
 " v1.3: added support for GetLatestVimScripts, removed initial cursor() call
 " v1.2: fix: converted logpad.vim to UNIX format (was not working outside Windows)
@@ -48,16 +49,19 @@
 "    http://schwerdtfegr.wordpress.com/2009/08/27/eine-notepad-funkzjon-die-man-missen-lernt/
 " Thanks to the guys in #vim (freenode.net) for basic help.
 "
+" Contributors:
+"  . timestamping clues: DHulme @ freenode.net
+"  . various patches:    Talha Mansoor
+"
 " ---------[ HERE WE GO! ]---------
 
-function s:TryToFigureThatTimestampRegex()
-    " thanks to DHulme for the idea...
+function! s:TryToFigureThatTimestampRegex()
     let s:timestampformat = strftime("%c")
     let s:timestampformat = substitute(s:timestampformat,'\a','\\a','g')
     let s:timestampformat = substitute(s:timestampformat,'\d','\\d','g')
 endfunction
 
-function LogpadInit()
+function! LogpadInit()
     " check the configuration, set it (and exit) if needed
     if !exists('g:LogpadEnabled')        | let g:LogpadEnabled        = 1 | endif
     if !exists('g:LogpadInsert')         | let g:LogpadInsert         = 0 | endif
@@ -99,7 +103,7 @@ function LogpadInit()
 
         " enter insert mode if enabled
         if g:LogpadInsert == 1
-            let &insertmode = 1
+            execute  ":startinsert"
         endif
     endif
 endfunction
